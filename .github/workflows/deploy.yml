@@ -1,0 +1,36 @@
+name: Update Test Branch
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+       
+      - name: Setup Git User
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "<EMAIL>"
+     
+
+      - name: Update build Branch
+        run: |
+          git checkout main
+          git fetch origin
+          if git rev-parse --verify origin/build; then
+            git checkout build
+            git pull origin build
+          else
+            git checkout -b build
+          fi
+          git merge origin/main
+          git push origin build
